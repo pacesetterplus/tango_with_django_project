@@ -14,3 +14,5 @@ tests_chapter9.py
 tests_chapter10.py
 *.sqlite3
 d_migration.py
+tests.py
+*.coverage
