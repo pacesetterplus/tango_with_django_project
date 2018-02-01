@@ -33,6 +33,8 @@ class Page(models.Model):
     title = models.CharField(max_length=128)
     url = models.URLField()
     views = models.IntegerField(default=0)
+    #first_visit = models.TimeField()
+    #last_visit = models.TimeField()
 
     #similar to java toString method
     def __str__(self):
