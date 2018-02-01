@@ -1,5 +1,6 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -39,4 +40,19 @@ class Page(models.Model):
     #similar to java toString method
     def __str__(self):
         return self.title
+
+
+class UserProfile(models.Model):
+    #this is reqd. link userprofile to a usermodel instance.
+    user = models.OneToOneField(User)
+
+    #additional attributes we wish to includes
+    website = models.URLField(blank = True)
+    picture = models.ImageField(upload_to='profile_images', blank = True)
+    #toString equivalent
+    def __str__(self):
+        return self.user.username
+
+
+
 

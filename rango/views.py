@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from rango.models import Category, Page
-from rango.forms import CategoryForm, PageForm
+from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
 
 def index(request):
     category_list = Category.objects.order_by('-likes')[:5]
@@ -63,3 +63,49 @@ def add_page(request, category_name_slug):
     
     context_dict = {'form':form, 'category':category} 
     return render(request,'rango/add_page.html', context_dict)
+
+def register(request):
+
+    #is registeration successful?
+    registered = False
+
+    #if it is a HTTP POST, we are interested in processing data
+    if request.method == 'POST':
+        user_form = UserForm(data=request.POST)
+        profile_form = UserProfileForm(data=request.POST)
+
+        #if the two forms are valid
+        if user_form.is_valid() and profile_form.is_valid():
+            #save user's form data to dbase
+            user = user_form.save()
+
+            #hash password
+            user.set_password(user.password)
+            user.save()
+
+            #sort out the UserProfile instance
+            #we set commit = false. This delays saving the model
+            #until we are ready to avoid integrity problems
+            profile = profile_form.save(commit=False)
+            profile.user = user
+
+            #get picture if provided
+            if 'picture' in request.FILES:
+                profile.picture = request.FILES['picture']
+            #now save the UserProfile model instance
+            profile.save()
+            #registration successful
+            registered = True
+        else:
+            #Invalid forms
+            print(user_form.errors, profile_form.errors)
+    else:
+        #not a HTTP POST
+
+        # this form will be blank
+        user_form = UserForm()
+        profile_form = UserProfileForm()
+    # render template depending on the context
+    return render(request, 'rango/register.html', {'user_form': user_form, 
+                                                    'profile_form': profile_form,
+                                                    'registered': registered})
