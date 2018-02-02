@@ -1,13 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Rango - Add PAge</title>
-</head>
-<body>
+{% extends 'rango/base.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+    Add Page
+{% endblock %}
+
+{% block body_block%}
+{% if user.is_authenticated %}
+
     <div>
         {% if category %}
         <h1>Add a Page to {{category.name}} </h1>
-
         <form id="page_form" method="post" action="/rango/category/{{ category.slug }}/add_page/">
             {% csrf_token %}
             {% for hidden in form.hidden_fields %}
@@ -26,6 +29,9 @@
             {% endif %}          
         
     </div>
-    
-</body>
-</html>
+    {% else %}
+    Please, log in to add a page.
+    {% endif %}
+
+    {% endblock%}
+

@@ -1,7 +1,10 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login, logout
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from rango.models import Category, Page
 from rango.forms import CategoryForm, PageForm, UserForm, UserProfileForm
+from django.contrib.auth.decorators import login_required
 
 def index(request):
     category_list = Category.objects.order_by('-likes')[:5]
@@ -109,3 +112,43 @@ def register(request):
     return render(request, 'rango/register.html', {'user_form': user_form, 
                                                     'profile_form': profile_form,
                                                     'registered': registered})
+def user_login(request):
+    #pull out relevant information if it's HTTP POST
+    if request.method == 'POST':
+    #gather username and password provided by the user.
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        # check if valid
+        user = authenticate(username=username, password=password)
+        #if we have a user object, the details are correct
+        if user:
+            if user.is_active:
+                #send user back to homepage
+                login(request, user)
+                return HttpResponseRedirect(reverse('index'))
+            else:
+                # an inactive account
+                return HttpResponse("Your Rango account is disabled.")
+        else:
+            # bad login details provided
+            print ("Invalid login details:{0}, {1}".
+                format(username,password))
+            return HttpResponse("Invalid login details supplied.")
+
+    # request not HTTP POST
+    else:
+        # no context variable to pass to the template system
+        return render(request, 'rango/login.html', {})
+
+
+@login_required
+def restricted(request):
+    context_dict = {'message':"Since you are logged in, you can see this text!" }
+    return render(request, 'rango/restricted.html', context_dict)
+
+@login_required
+def user_logout(request):
+    logout(request)
+    # take user back to homepage
+    return HttpResponse(reverse('index'))
