@@ -156,7 +156,7 @@ def user_login(request):
 
 @login_required
 def restricted(request):
-    context_dict = {}
+    context_dict = {'message': "Since you're logged in, you can see this text!"}
     return render(request, 'rango/restricted.html', context_dict)
 
 @login_required
