@@ -51,7 +51,7 @@ class UserProfile(models.Model):
     picture = models.ImageField(upload_to='profile_images', blank = True)
     #toString equivalent
     def __str__(self):
-        return self.user.name
+        return self.user.username
 
 
 
