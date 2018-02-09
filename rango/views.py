@@ -45,7 +45,7 @@ def show_category(request,category_name_slug):
 
 def add_category(request):
     form = CategoryForm()
-
+    context_dict ={}
     # A HTTP Method
     if request.method == 'POST':
         form = CategoryForm(request.POST)
@@ -54,8 +54,10 @@ def add_category(request):
             form.save(commit=True)
             return index(request)
         else:
-           print(form.errors)
-    return render(request, 'rango/add_category.html', {'form':form})
+            print(form.errors)
+    context_dict['form'] = form
+
+    return render(request, 'rango/add_category.html',context_dict)
 
 # view for add_page.html
 def add_page(request, category_name_slug):
@@ -74,8 +76,7 @@ def add_page(request, category_name_slug):
                 page.save()
                 return show_category(request, category_name_slug) 
             else:
-                print (form.errors)
-    
+                print (form.errors)    
     context_dict = {'form':form, 'category':category} 
     return render(request,'rango/add_page.html', context_dict)
 
